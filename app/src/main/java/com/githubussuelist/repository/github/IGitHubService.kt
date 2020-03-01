@@ -9,7 +9,7 @@ import retrofit2.http.Query
 
 interface IGitHubService {
     @GET("repos/{repositoryName}")
-    fun getRepositoryByName(@Path("repositoryName") repositoryName: String) : Call<List<RepositoryResponseModel>>
+    fun getRepositoryByName(@Path("repositoryName") repositoryName: String) : Call<RepositoryResponseModel>
 
     @GET("repos/{repositoryName}/issues")
     fun getRepositoryIssuesByRepositoryName(@Path("repositoryName") stateId: String, @Query("page") page: Int) : Call<List<RepositoryIssueResponseModel>>

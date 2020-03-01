@@ -21,8 +21,8 @@ data class RepositoryIssueEntityModel(
 
     @ColumnInfo(name = "title")
     val title: String,
-    
-    @ColumnInfo(name = "repository_id")
+
+    @ColumnInfo(name = "repository_id", index = true)
     val repositoryId: Int
 ) {
     companion object {

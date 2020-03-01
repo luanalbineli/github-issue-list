@@ -8,23 +8,37 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.githubussuelist.R
+import com.githubussuelist.databinding.DialogRepositoryDetailBinding
+import com.githubussuelist.extension.fragmentViewModelProvider
+import com.githubussuelist.extension.injector
+import com.githubussuelist.model.room.RepositoryEntityModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.dialog_fragment_repository.*
+import kotlinx.android.synthetic.main.dialog_repository_detail.*
 import timber.log.Timber
 
 
-class RepositoryDialogFragment : BottomSheetDialogFragment() {
-    override fun getTheme(): Int = R.style.RoundBottomSheetDialog
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        BottomSheetDialog(requireContext(), theme)
+class RepositoryDetailDialog : BottomSheetDialogFragment() {
+    private val mViewModel by lazy {
+        fragmentViewModelProvider(
+            RepositoryDetailViewModel::class.java,
+            injector.repositoryViewModelFactory()
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(R.layout.dialog_fragment_repository, container, false)
+    ): View? {
+        val binding = DialogRepositoryDetailBinding.inflate(inflater, container, false).also {
+            it.repositoryViewModel = mViewModel
+            it.lifecycleOwner = this
+        }
+
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupFullscreenDialog()
@@ -58,8 +72,22 @@ class RepositoryDialogFragment : BottomSheetDialogFragment() {
         return displayMetrics.heightPixels
     }
 
+    override fun getTheme(): Int = R.style.RoundBottomSheetDialog
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
+        BottomSheetDialog(requireContext(), theme)
+
     companion object {
         const val TAG = "RepositoryDialogFragment"
-        fun getInstance() = RepositoryDialogFragment()
+        private const val REPOSITORY_ENTITY_MODEL_EXTRA_KEY = "REPOSITORY_ENTITY_MODEL_EXTRA_KEY"
+
+        fun getInstance(repositoryEntityModel: RepositoryEntityModel?) =
+            RepositoryDetailDialog().also {
+                it.arguments = Bundle().also { arguments ->
+                    arguments.putParcelable(
+                        REPOSITORY_ENTITY_MODEL_EXTRA_KEY,
+                        repositoryEntityModel
+                    )
+                }
+            }
     }
 }
