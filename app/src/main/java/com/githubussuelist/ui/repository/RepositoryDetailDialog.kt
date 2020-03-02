@@ -11,13 +11,15 @@ import com.githubussuelist.R
 import com.githubussuelist.databinding.DialogRepositoryDetailBinding
 import com.githubussuelist.extension.fragmentViewModelProvider
 import com.githubussuelist.extension.injector
+import com.githubussuelist.extension.safeNullObserve
+import com.githubussuelist.model.common.Status
 import com.githubussuelist.model.room.RepositoryEntityModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.dialog_repository_detail.*
+import retrofit2.HttpException
 import timber.log.Timber
-
 
 class RepositoryDetailDialog : BottomSheetDialogFragment() {
     private val mViewModel by lazy {
@@ -43,6 +45,25 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupFullscreenDialog()
         toolbar_repository.setNavigationOnClickListener { dismiss() }
+
+        mViewModel.repositoryDetail.safeNullObserve(this) {
+            text_layout_repository_detail_name.error = null
+            if (it.status == Status.ERROR) {
+                val errorMessage = extractErrorMessageFromException(it.exception)
+                text_layout_repository_detail_name.error = getString(errorMessage)
+            }
+        }
+
+        mViewModel.repositoryNameValidation.safeNullObserve(this) {
+            text_layout_repository_detail_name.error = getString(R.string.error_repository_detail_invalid)
+        }
+    }
+
+    private fun extractErrorMessageFromException(exception: Exception?): Int {
+        if (exception != null && exception is HttpException && exception.code() == 404) {
+            return R.string.error_repository_detail_not_found
+        }
+        return R.string.error_repository_detail
     }
 
     private fun setupFullscreenDialog() {

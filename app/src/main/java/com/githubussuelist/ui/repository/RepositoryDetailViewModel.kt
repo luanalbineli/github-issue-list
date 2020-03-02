@@ -1,31 +1,33 @@
 package com.githubussuelist.ui.repository
 
 import androidx.lifecycle.*
-import com.githubussuelist.model.common.RequestResult
-import com.githubussuelist.model.response.RepositoryResponseModel
+import com.githubussuelist.model.common.Result
 import com.githubussuelist.model.room.RepositoryEntityModel
 import com.githubussuelist.repository.github.GitHubRepository
-import com.githubussuelist.repository.room.RoomRepository
 import javax.inject.Inject
 
-class RepositoryDetailViewModel @Inject constructor(private val githubRepository: GitHubRepository, private val roomRepository: RoomRepository) : ViewModel() {
+class RepositoryDetailViewModel @Inject constructor(private val githubRepository: GitHubRepository) : ViewModel() {
     val repositoryName = MutableLiveData("")
 
-    private val mRepositoryDetail = MediatorLiveData<RequestResult<RepositoryEntityModel?>>()
-    val repositoryDetail: LiveData<RequestResult<RepositoryEntityModel?>>
+    private val mRepositoryDetail = MediatorLiveData<Result<RepositoryEntityModel>>()
+    val repositoryDetail: LiveData<Result<RepositoryEntityModel>>
         get() = mRepositoryDetail
+
+    private val mRepositoryNameValidation = MutableLiveData<Unit>()
+    val repositoryNameValidation: LiveData<Unit>
+        get() = mRepositoryNameValidation
 
     fun saveRepositoryDetail() {
         repositoryName.value?.let { repositoryName ->
-            mRepositoryDetail.addSource(githubRepository.fetchAndSaveRepository(viewModelScope, repositoryName)) {
-                if (it is RequestResult.Success && it.data != null) {
-                    saveRepository(it.data)
-                }
+            val repositoryNameParts = repositoryName.split('/')
+            if (repositoryNameParts.size != 2) {
+                mRepositoryNameValidation.value = Unit
+                return@let
+            }
+
+            mRepositoryDetail.addSource(githubRepository.fetchAndSaveRepository(viewModelScope, repositoryNameParts[0], repositoryNameParts[1])) {
+                mRepositoryDetail.value = it
             }
         }
-    }
-
-    private fun saveRepository(repositoryResponseModel: RepositoryResponseModel) {
-        roomRepository.getRepository()
     }
 }

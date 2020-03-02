@@ -1,7 +1,7 @@
 package com.githubussuelist.repository.base
 
 import androidx.lifecycle.MutableLiveData
-import com.githubussuelist.model.common.RequestResult
+import com.githubussuelist.model.common.Result
 import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import javax.inject.Inject
@@ -12,9 +12,9 @@ class RepositoryExecutor @Inject constructor(
 ) {
     fun <R, T> makeRequest(clazz: Class<T>,
                            viewModelScope: CoroutineScope,
-                           asyncRequest: suspend CoroutineScope.(serviceInstance: T) -> R): MutableLiveData<RequestResult<R?>> {
-        val result = MutableLiveData<RequestResult<R?>>()
-        result.value = RequestResult.Loading()
+                           asyncRequest: suspend CoroutineScope.(serviceInstance: T) -> R): MutableLiveData<Result<R>> {
+        val result = MutableLiveData<Result<R>>()
+        result.value = Result.loading()
 
         // TODO: Handle internet connection
         /*val isConnected = networkStatus.haveActiveConnection()
@@ -32,10 +32,10 @@ class RepositoryExecutor @Inject constructor(
                     val apiServiceInstance = retrofit.create(clazz)
                     asyncRequestResult = asyncRequest(apiServiceInstance)
                 }
-                result.value = RequestResult.Success(asyncRequestResult)
+                result.value = Result.success(asyncRequestResult)
             } catch (cancellationException: CancellationException) {
             } catch (exception: Exception) {
-                result.value = RequestResult.Error(exception)
+                result.value = Result.error(exception)
             } finally {
                 idlingResourceCounter.decrement()
             }

@@ -16,8 +16,23 @@ data class RepositoryEntityModel constructor(
     @ColumnInfo(name = "name")
     val name: String,
 
-    @ColumnInfo(name = "name")
-    val name: String
+    @ColumnInfo(name = "full_name")
+    val fullName: String,
+
+    @ColumnInfo(name = "description")
+    val description: String,
+
+    @ColumnInfo(name = "open_issue_count")
+    val openIssueCount: Int,
+
+    @ColumnInfo(name = "star_count")
+    val starCount: Int,
+
+    @ColumnInfo(name = "fork_count")
+    val forkCount: Int,
+
+    @ColumnInfo(name = "subscriber_count")
+    val subscriberCount: Int
 ): Parcelable {
     companion object {
         const val TABLE_NAME = "repository"

@@ -7,6 +7,8 @@
         <variable
             name="repositoryViewModel"
             type="com.githubussuelist.ui.repository.RepositoryDetailViewModel" />
+
+        <import type="com.githubussuelist.model.common.Status" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,36 +28,51 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/default_margin_4x"
-                android:gravity="center"
                 android:ellipsize="end"
+                android:gravity="center"
                 android:singleLine="true"
                 android:text="@string/text_dialog_repository_detail_title" />
         </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_layout_repository_detail_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/default_margin"
             android:hint="@string/text_dialog_repository_detail_name"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_repository"
+            app:helperText="@string/text_dialog_repository_detail_format"
+            app:helperTextEnabled="true"
             app:placeholderText="@string/text_dialog_repository_detail_name">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:inputType="text"
-                android:text="@={repositoryViewModel.repositoryName}"
-                android:layout_height="wrap_content" />
+                android:enabled="@{repositoryViewModel.repositoryDetail.status != Status.LOADING}"
+                android:text="@={repositoryViewModel.repositoryName}" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <ProgressBar
+            android:layout_marginBottom="@dimen/default_margin_2x"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            app:goneUnless="@{repositoryViewModel.repositoryDetail.status == Status.LOADING}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <Button
+            android:id="@+id/button_repository_detail_save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/default_margin"
             android:layout_marginEnd="@dimen/default_margin"
-            android:onClick="@{() -> repositoryViewModel.saveRepositoryDetail()}"
             android:layout_marginBottom="@dimen/default_margin_2x"
             android:enabled="@{repositoryViewModel.repositoryName.length() > 0}"
+            android:onClick="@{() -> repositoryViewModel.saveRepositoryDetail()}"
             android:text="@string/text_save"
+            app:goneUnless="@{repositoryViewModel.repositoryDetail.status != Status.LOADING}"
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

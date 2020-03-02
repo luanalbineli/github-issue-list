@@ -1,8 +1,7 @@
 package com.githubussuelist.repository.github
 
 import androidx.lifecycle.MutableLiveData
-import com.githubussuelist.model.common.RequestResult
-import com.githubussuelist.model.response.RepositoryResponseModel
+import com.githubussuelist.model.common.Result
 import com.githubussuelist.model.room.RepositoryEntityModel
 import com.githubussuelist.repository.base.BaseRepository
 import com.githubussuelist.repository.base.RepositoryExecutor
@@ -18,21 +17,15 @@ class GitHubRepository @Inject constructor(
     override val serviceInstanceType: Class<IGitHubService>
         get() = IGitHubService::class.java
 
-    fun getRepositoryByName(viewModelScope: CoroutineScope, repositoryName: String): MutableLiveData<RequestResult<RepositoryResponseModel?>> {
-        return makeRequest(viewModelScope) { service ->
-            service.getRepositoryByName(repositoryName).await()
-        }
-    }
-
     fun fetchAndSaveRepository(
         viewModelScope: CoroutineScope,
+        repositoryOrgName: String,
         repositoryName: String
-    ): MutableLiveData<RequestResult<RepositoryEntityModel?>> {
+    ): MutableLiveData<Result<RepositoryEntityModel>> {
         return makeRequest(viewModelScope) { service ->
-            val repositoryResponseModel = service.getRepositoryByName(repositoryName).await()
+            val repositoryResponseModel = service.getRepositoryByName(repositoryOrgName, repositoryName).await()
 
             val repositoryEntityModel = repositoryResponseModel.toEntity()
-
 
             roomRepository.saveRepository(repositoryEntityModel)
 
