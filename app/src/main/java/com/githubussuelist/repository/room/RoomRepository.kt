@@ -1,9 +1,11 @@
 package com.githubussuelist.repository.room
 
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.DataSource
 import androidx.room.withTransaction
 import com.githubussuelist.model.common.Result
 import com.githubussuelist.model.room.RepositoryEntityModel
+import com.githubussuelist.model.room.RepositoryIssueEntityModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,4 +38,13 @@ class RoomRepository @Inject constructor(private val gitHubIssueDB: GitHubIssueD
             gitHubIssueDB.repositoryDAO().insert(repositoryEntityModel)
         }
     }
+
+    suspend fun saveIssueList(issueList: List<RepositoryIssueEntityModel>) {
+        gitHubIssueDB.withTransaction {
+            gitHubIssueDB.repositoryIssueDAO().insertAll(*issueList.toTypedArray())
+        }
+    }
+
+    fun getRepositoryIssueList(): DataSource.Factory<Int, RepositoryIssueEntityModel> =
+        gitHubIssueDB.repositoryIssueDAO().getAll()
 }

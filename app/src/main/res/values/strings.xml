@@ -13,5 +13,7 @@
     <!-- BEGIN: Common -->
     <string name="text_save">Salvar</string>
     <string name="error_repository_detail_invalid">O nome informado está com o formato inválido</string>
+    <string name="text_try_again">Tentar novamente</string>
+    <string name="text_request_status_empty_list_title">Empty title</string>
     <!-- END: Common-->
 </resources>

@@ -1,6 +1,7 @@
 package com.githubussuelist.ui.repository
 
 import android.app.Dialog
+import android.content.Context
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
@@ -19,7 +20,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.dialog_repository_detail.*
 import retrofit2.HttpException
-import timber.log.Timber
 
 class RepositoryDetailDialog : BottomSheetDialogFragment() {
     private val mViewModel by lazy {
@@ -27,6 +27,17 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
             RepositoryDetailViewModel::class.java,
             injector.repositoryViewModelFactory()
         )
+    }
+
+    private lateinit var mResultListener: OnRepositoryDetailDialogResult
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            mResultListener = context as OnRepositoryDetailDialogResult
+        } catch (e: ClassCastException) {
+            throw ClassCastException("$context must implement OnRepositoryDetailDialogResult")
+        }
     }
 
     override fun onCreateView(
@@ -37,6 +48,8 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
         val binding = DialogRepositoryDetailBinding.inflate(inflater, container, false).also {
             it.repositoryViewModel = mViewModel
             it.lifecycleOwner = this
+
+            it.toolbarRepository.setNavigationOnClickListener { mViewModel.closeDialog() }
         }
 
         return binding.root
@@ -44,7 +57,8 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupFullscreenDialog()
-        toolbar_repository.setNavigationOnClickListener { dismiss() }
+
+        initViewModel()
 
         mViewModel.repositoryDetail.safeNullObserve(this) {
             text_layout_repository_detail_name.error = null
@@ -57,6 +71,16 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
         mViewModel.repositoryNameValidation.safeNullObserve(this) {
             text_layout_repository_detail_name.error = getString(R.string.error_repository_detail_invalid)
         }
+
+        mViewModel.dismiss.safeNullObserve(this) {
+            mResultListener.onResult(it)
+            dismiss()
+        }
+    }
+
+    private fun initViewModel() {
+        val repositoryEntityModel = arguments?.getParcelable<RepositoryEntityModel>(REPOSITORY_ENTITY_MODEL_EXTRA_KEY)
+        mViewModel.init(repositoryEntityModel)
     }
 
     private fun extractErrorMessageFromException(exception: Exception?): Int {
@@ -69,10 +93,8 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
     private fun setupFullscreenDialog() {
         dialog?.setOnShowListener { dialog ->
             val bottomSheetDialog = dialog as BottomSheetDialog
-            val bottomSheet =
-                bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet) as FrameLayout
-            val behavior: BottomSheetBehavior<*> =
-                BottomSheetBehavior.from(bottomSheet)
+            val bottomSheet = bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet) as FrameLayout
+            val behavior = BottomSheetBehavior.from(bottomSheet)
             val layoutParams = bottomSheet.layoutParams
 
             val windowHeight: Int = getWindowHeight()
@@ -82,8 +104,6 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
             bottomSheet.layoutParams = layoutParams
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             behavior.peekHeight = windowHeight
-            Timber.d("Window height: $windowHeight")
-
         }
     }
 

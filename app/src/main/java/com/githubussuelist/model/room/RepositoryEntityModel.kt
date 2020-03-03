@@ -3,12 +3,14 @@ package com.githubussuelist.model.room
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import kotlinx.android.parcel.IgnoredOnParcel
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 @Entity(tableName = RepositoryEntityModel.TABLE_NAME)
-data class RepositoryEntityModel constructor(
+data class RepositoryEntityModel(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")
     val id: Int,
@@ -33,7 +35,11 @@ data class RepositoryEntityModel constructor(
 
     @ColumnInfo(name = "subscriber_count")
     val subscriberCount: Int
-): Parcelable {
+) : Parcelable {
+    @IgnoredOnParcel
+    @Ignore
+    val orgName: String = fullName.split('/')[0]
+
     companion object {
         const val TABLE_NAME = "repository"
     }

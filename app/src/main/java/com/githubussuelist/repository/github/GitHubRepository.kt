@@ -3,6 +3,7 @@ package com.githubussuelist.repository.github
 import androidx.lifecycle.MutableLiveData
 import com.githubussuelist.model.common.Result
 import com.githubussuelist.model.room.RepositoryEntityModel
+import com.githubussuelist.model.room.RepositoryIssueEntityModel
 import com.githubussuelist.repository.base.BaseRepository
 import com.githubussuelist.repository.base.RepositoryExecutor
 import com.githubussuelist.repository.room.RoomRepository
@@ -33,5 +34,20 @@ class GitHubRepository @Inject constructor(
         }
     }
 
+    fun fetchAndSaveIssueList(
+        viewModelScope: CoroutineScope,
+        repositoryId: Int,
+        repositoryOrgName: String,
+        repositoryName: String,
+        pageIndex: Int
+    ): MutableLiveData<Result<List<RepositoryIssueEntityModel>>> {
+        return makeRequest(viewModelScope) { service ->
+            val issueListResponseModel = service.getRepositoryIssuesByRepositoryName(repositoryOrgName, repositoryName, pageIndex).await()
+            val issueListEntityModel = issueListResponseModel.map { it.toEntity(repositoryId) }
 
+            roomRepository.saveIssueList(issueListEntityModel)
+
+            return@makeRequest issueListEntityModel
+        }
+    }
 }
