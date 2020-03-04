@@ -43,7 +43,48 @@
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <include layout="@layout/content_scrolling" />
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/text_issue_list_last_sync_date_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_margin_2x"
+                    android:text="@string/text_issue_list_last_sync_at"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintEnd_toStartOf="@+id/text_issue_list_last_sync_date"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/text_issue_list_last_sync_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:date="@{mainViewModel.issueSyncDetail.lastSyncDate}"
+                    app:dateFormat="@{@string/format_date_dd_MM_yyyy_HH_mm}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toEndOf="@+id/text_issue_list_last_sync_date_label"
+                    app:layout_constraintTop_toTopOf="@+id/text_issue_list_last_sync_date_label"
+                    android:layout_marginStart="4dp"
+                    tools:text="10/10/2020" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/list_issue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/text_margin"
+                    app:layout_constraintTop_toBottomOf="@+id/text_issue_list_last_sync_date" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

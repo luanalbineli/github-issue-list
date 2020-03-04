@@ -8,12 +8,23 @@
     <string name="text_dialog_repository_detail_name">Nome do repositório</string>
     <string name="error_repository_detail_not_found">O repositório informado não foi encontrado</string>
     <string name="error_repository_detail">Não foi possível salvar as informações do repositório</string>
+    <string name="error_repository_detail_invalid">O nome informado está com o formato inválido</string>
     <!-- END: Repository detail -->
 
+    <!-- BEGIN: Issue list -->
+    <string name="text_issue_list_last_sync_at">Última sincronização em:</string>
+
+    <!-- END: Issue list -->
+
     <!-- BEGIN: Common -->
+    <string name="symbol_hashtag">#</string>
     <string name="text_save">Salvar</string>
-    <string name="error_repository_detail_invalid">O nome informado está com o formato inválido</string>
     <string name="text_try_again">Tentar novamente</string>
     <string name="text_request_status_empty_list_title">Empty title</string>
+    <string name="text_opened_on">aberto há</string>
+    <string name="text_by">por</string>
+    <string name="format_date_dd_MM_yyyy_HH_mm">dd/MM/yyyy \'às\' HH:mm</string>
+    <string name="error_issue_list_fetch">Não foi possível buscar a lista de issues. Por favor, tente novamente.</string>
+    <string name="text_issue_list_empty">Nenhuma issue encontrada</string>
     <!-- END: Common-->
 </resources>

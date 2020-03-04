@@ -1,20 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <variable
+            name="repositoryIssueEntityModel"
+            type="com.githubussuelist.model.room.RepositoryIssueEntityModel" />
+
+        <import type="android.text.format.DateUtils" />
+
     </data>
 
-    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/default_margin_0_5"
-        android:layout_marginBottom="@dimen/default_margin_0_5">
+        android:layout_marginBottom="@dimen/default_margin_0_5"
+        app:cardUseCompatPadding="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/default_margin">
+
+            <ImageView
+                android:id="@+id/image_item_issue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:tint="@color/colorIssueItem"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_error_black" />
+
+            <TextView
+                android:id="@+id/text_item_issue_title"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/default_margin"
+                android:layout_marginEnd="@dimen/default_margin"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@{repositoryIssueEntityModel.title}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/image_item_issue"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="This is the issue title" />
+
+            <TextView
+                android:id="@+id/text_item_issue_hashtag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/symbol_hashtag"
+                app:layout_constraintStart_toStartOf="@+id/text_item_issue_title"
+                app:layout_constraintTop_toBottomOf="@+id/text_item_issue_title" />
+
+            <TextView
+                android:id="@+id/text_item_issue_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{String.valueOf(repositoryIssueEntityModel.number)}"
+                app:layout_constraintStart_toEndOf="@+id/text_item_issue_hashtag"
+                app:layout_constraintTop_toTopOf="@+id/text_item_issue_hashtag"
+                tools:text="123" />
+
+            <TextView
+                android:id="@+id/text_item_issue_opened"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/text_opened_on"
+                app:layout_constraintStart_toEndOf="@+id/text_item_issue_number"
+                app:layout_constraintTop_toTopOf="@+id/text_item_issue_number" />
+
+            <TextView
+                android:id="@+id/text_item_issue_time_elapsed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                app:layout_constraintStart_toEndOf="@+id/text_item_issue_opened"
+                app:layout_constraintTop_toTopOf="@+id/text_item_issue_opened"
+                app:timeElapsed="@{repositoryIssueEntityModel.createdAt}"
+                tools:text="35 segundos atrás" />
+
+            <TextView
+                android:id="@+id/text_item_issue_by"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/text_by"
+                app:layout_constraintStart_toEndOf="@+id/text_item_issue_time_elapsed"
+                app:layout_constraintTop_toTopOf="@+id/text_item_issue_time_elapsed" />
+
+            <TextView
+                android:id="@+id/text_item_issue_user_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="@{repositoryIssueEntityModel.userName}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/text_item_issue_by"
+                app:layout_constraintTop_toTopOf="@+id/text_item_issue_by"
+                tools:text="bicicletero" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

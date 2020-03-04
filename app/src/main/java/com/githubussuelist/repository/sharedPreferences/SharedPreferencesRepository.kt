@@ -12,7 +12,7 @@ class SharedPreferencesRepository @Inject constructor(private val context: Conte
         if (contains(KEY_SYNC_LAST_PAGE_INDEX)) {
             return@withSharedPreferences IssueSyncDetailModel(
                 lastPageIndex = getInt(KEY_SYNC_LAST_PAGE_INDEX, Constants.API_INITIAL_PAGE_INDEX),
-                lastSyncDate = Date(getLong(KEY_SYNC_LAST_PAGE_INDEX, 0)),
+                lastSyncDate = Date(getLong(KEY_SYNC_LAST_SYNC_DATE, 0)),
                 hasMoreIssues = getBoolean(KEY_SYNC_HAS_MORE_ISSUES, true)
             )
         }
@@ -24,8 +24,12 @@ class SharedPreferencesRepository @Inject constructor(private val context: Conte
         return body(sharedPreferences)
     }
 
-    fun saveIssueSyncDetailModel(issueSyncDetailModel: IssueSyncDetailModel) {
-
+    fun saveIssueSyncDetailModel(issueSyncDetailModel: IssueSyncDetailModel) = withSharedPreferences {
+        edit()
+            .putInt(KEY_SYNC_LAST_PAGE_INDEX, issueSyncDetailModel.lastPageIndex)
+            .putLong(KEY_SYNC_LAST_SYNC_DATE, issueSyncDetailModel.lastSyncDate.time)
+            .putBoolean(KEY_SYNC_HAS_MORE_ISSUES, issueSyncDetailModel.hasMoreIssues)
+            .apply()
     }
 
     companion object {

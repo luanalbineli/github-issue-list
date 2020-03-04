@@ -140,4 +140,13 @@ class MainViewModel @Inject constructor(
         sharedPreferencesRepository.saveIssueSyncDetailModel(issueSyncDetailModel)
         mIssueSyncDetail.value = issueSyncDetailModel
     }
+
+    fun fetchMoreIssues() {
+        mIssueSyncDetail.value?.let { issueSyncDetailModel ->
+            mRepositoryEntityModel.value?.data?.let { repositoryEntityModel ->
+                fetchRepositoryIssues(repositoryEntityModel, issueSyncDetailModel.lastPageIndex + 1)
+            }
+
+        }
+    }
 }

@@ -3,6 +3,7 @@ package com.githubussuelist.ui.main.list
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import com.githubussuelist.databinding.ItemIssueBinding
 import com.githubussuelist.model.room.RepositoryIssueEntityModel
 import com.githubussuelist.widgets.recyclerView.CustomRecyclerViewAdapter
 
@@ -12,11 +13,13 @@ class IssueListAdapter : CustomRecyclerViewAdapter<RepositoryIssueEntityModel, I
         parent: ViewGroup,
         viewType: Int
     ): IssueViewHolder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val binding = ItemIssueBinding.inflate(layoutInflater, parent, false)
+        return IssueViewHolder(binding)
     }
 
     override fun onBindItemViewHolder(holder: IssueViewHolder, position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        holder.binding.repositoryIssueEntityModel = getItem(position)
+        holder.binding.executePendingBindings()
     }
 
     companion object {

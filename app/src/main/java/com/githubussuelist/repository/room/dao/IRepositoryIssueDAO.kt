@@ -8,7 +8,7 @@ import com.githubussuelist.model.room.RepositoryIssueEntityModel
 
 @Dao
 interface IRepositoryIssueDAO {
-    @Query("SELECT * FROM ${RepositoryIssueEntityModel.TABLE_NAME}")
+    @Query("SELECT * FROM ${RepositoryIssueEntityModel.TABLE_NAME} ORDER BY created_at DESC")
     fun getAll(): DataSource.Factory<Int, RepositoryIssueEntityModel>
 
     @Insert()

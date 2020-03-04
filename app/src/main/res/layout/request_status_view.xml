@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <br.com.codemoney.common.widgets.LoadingView
-        android:id="@+id/loading_request_status"
+    <ProgressBar
         android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:id="@+id/loading_request_status" />
 
     <LinearLayout
         android:id="@+id/view_request_status_error"

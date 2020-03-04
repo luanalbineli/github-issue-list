@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class RepositoryDetailViewModel @Inject constructor(private val githubRepository: GitHubRepository) : ViewModel() {
     val repositoryName = MutableLiveData("")
-    private var mInitialRepositoryId = Int.MIN_VALUE
+    private var mInitialRepositoryName = ""
 
     private val mRepositoryDetail = MediatorLiveData<Result<RepositoryEntityModel>>()
     val repositoryDetail: LiveData<Result<RepositoryEntityModel>>
@@ -26,12 +26,17 @@ class RepositoryDetailViewModel @Inject constructor(private val githubRepository
     fun init(repositoryEntityModel: RepositoryEntityModel?) {
         if (repositoryEntityModel != null) {
             repositoryName.value = repositoryEntityModel.fullName
-            mInitialRepositoryId = repositoryEntityModel.id
+            mInitialRepositoryName = repositoryEntityModel.fullName
         }
     }
 
     fun saveRepositoryDetail() {
         repositoryName.value?.let { repositoryName ->
+            if (repositoryName == mInitialRepositoryName) {
+                mDismiss.value = RepositoryDetailResult.Dismiss
+                return@let
+            }
+
             val repositoryNameParts = repositoryName.split('/')
             if (repositoryNameParts.size != 2) {
                 mRepositoryNameValidation.value = Unit
@@ -43,12 +48,7 @@ class RepositoryDetailViewModel @Inject constructor(private val githubRepository
 
                 if (it.status == Status.SUCCESS) {
                     it.data?.let { result ->
-                        val repositoryDetailResult = if (result.id == mInitialRepositoryId) {
-                            RepositoryDetailResult.Dismiss
-                        } else {
-                            RepositoryDetailResult.Updated(result)
-                        }
-                        mDismiss.value = repositoryDetailResult
+                        mDismiss.value = RepositoryDetailResult.Updated(result)
                     }
                 }
             }
