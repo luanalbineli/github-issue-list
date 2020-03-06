@@ -9,6 +9,7 @@ import com.githubussuelist.repository.base.RepositoryExecutor
 import com.githubussuelist.repository.room.RoomRepository
 import kotlinx.coroutines.CoroutineScope
 import retrofit2.await
+import timber.log.Timber
 import javax.inject.Inject
 
 class GitHubRepository @Inject constructor(
@@ -30,6 +31,8 @@ class GitHubRepository @Inject constructor(
 
             roomRepository.saveRepository(repositoryEntityModel)
 
+            Timber.d("saveRepository - 6")
+
             return@makeRequest repositoryEntityModel
         }
     }
@@ -39,12 +42,18 @@ class GitHubRepository @Inject constructor(
         repositoryId: Int,
         repositoryOrgName: String,
         repositoryName: String,
-        pageIndex: Int
+        pageIndex: Int,
+        clearPreviousList: Boolean
     ): MutableLiveData<Result<List<RepositoryIssueEntityModel>>> {
         return makeRequest(viewModelScope) { service ->
             val issueListResponseModel = service.getRepositoryIssuesByRepositoryName(repositoryOrgName, repositoryName, pageIndex).await()
             val issueListEntityModel = issueListResponseModel.map { it.toEntity(repositoryId) }
 
+            if (clearPreviousList) {
+                roomRepository.removeAllIssues()
+            }
+
+            Timber.d("SAVING: ${issueListEntityModel.joinToString(", ") { it.id.toString() }}")
             roomRepository.saveIssueList(issueListEntityModel)
 
             return@makeRequest issueListEntityModel

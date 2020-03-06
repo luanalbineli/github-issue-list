@@ -3,11 +3,12 @@ package com.githubussuelist.ui.main.list
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.githubussuelist.databinding.ItemIssueBinding
 import com.githubussuelist.model.room.RepositoryIssueEntityModel
 import com.githubussuelist.widgets.recyclerView.CustomRecyclerViewAdapter
 
-class IssueListAdapter : CustomRecyclerViewAdapter<RepositoryIssueEntityModel, IssueViewHolder>(RepositoryIssueDiff) {
+class IssueListAdapter constructor(recyclerView: RecyclerView) : CustomRecyclerViewAdapter<RepositoryIssueEntityModel, IssueViewHolder>(recyclerView, RepositoryIssueDiff) {
     override fun onCreateItemViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup,

@@ -20,6 +20,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.dialog_repository_detail.*
 import retrofit2.HttpException
+import timber.log.Timber
+
 
 class RepositoryDetailDialog : BottomSheetDialogFragment() {
     private val mViewModel by lazy {
@@ -61,15 +63,17 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
         initViewModel()
 
         mViewModel.repositoryDetail.safeNullObserve(this) {
-            text_layout_repository_detail_name.error = null
+            edit_text_layout_repository_detail_name.error = null
             if (it.status == Status.ERROR) {
+                Timber.e(it.exception, "An error occurred while tried to save the repository")
                 val errorMessage = extractErrorMessageFromException(it.exception)
-                text_layout_repository_detail_name.error = getString(errorMessage)
+                edit_text_layout_repository_detail_name.error = getString(errorMessage)
             }
         }
 
         mViewModel.repositoryNameValidation.safeNullObserve(this) {
-            text_layout_repository_detail_name.error = getString(R.string.error_repository_detail_invalid)
+            edit_text_layout_repository_detail_name.error =
+                getString(R.string.error_repository_detail_invalid)
         }
 
         mViewModel.dismiss.safeNullObserve(this) {
@@ -79,7 +83,8 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
     }
 
     private fun initViewModel() {
-        val repositoryEntityModel = arguments?.getParcelable<RepositoryEntityModel>(REPOSITORY_ENTITY_MODEL_EXTRA_KEY)
+        val repositoryEntityModel =
+            arguments?.getParcelable<RepositoryEntityModel>(REPOSITORY_ENTITY_MODEL_EXTRA_KEY)
         mViewModel.init(repositoryEntityModel)
     }
 
@@ -93,7 +98,8 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
     private fun setupFullscreenDialog() {
         dialog?.setOnShowListener { dialog ->
             val bottomSheetDialog = dialog as BottomSheetDialog
-            val bottomSheet = bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet) as FrameLayout
+            val bottomSheet =
+                bottomSheetDialog.findViewById<FrameLayout>(R.id.design_bottom_sheet) as FrameLayout
             val behavior = BottomSheetBehavior.from(bottomSheet)
             val layoutParams = bottomSheet.layoutParams
 
@@ -113,9 +119,14 @@ class RepositoryDetailDialog : BottomSheetDialogFragment() {
         return displayMetrics.heightPixels
     }
 
-    override fun getTheme(): Int = R.style.RoundBottomSheetDialog
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =
-        BottomSheetDialog(requireContext(), theme)
+    override fun getTheme(): Int = R.style.AppTheme_RoundBottomSheetDialog
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return object : BottomSheetDialog(requireActivity(), theme) {
+            override fun onBackPressed() {
+                mViewModel.closeDialog()
+            }
+        }
+    }
 
     companion object {
         const val TAG = "RepositoryDialogFragment"

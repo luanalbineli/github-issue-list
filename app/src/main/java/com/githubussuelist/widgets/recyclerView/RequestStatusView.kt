@@ -23,7 +23,7 @@ class RequestStatusView(context: Context, attributeSet: AttributeSet) :
     }
 
     fun toggleStatus(status: Status) {
-        loading_request_status.setDisplay(status == Status.LOADING)
+        progress_bar_request_status.setDisplay(status == Status.LOADING)
         view_request_status_error.setDisplay(status == Status.ERROR)
         view_request_status_empty.setDisplay(status == Status.EMPTY)
     }

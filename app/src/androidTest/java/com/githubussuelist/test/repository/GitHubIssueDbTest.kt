@@ -1,26 +1,26 @@
 package com.githubussuelist.test.repository
 
-import android.os.AsyncTask
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.githubussuelist.common.InstrumentedTest
-import com.githubussuelist.extension.blockingObserve
 import com.githubussuelist.model.room.RepositoryEntityModel
 import com.githubussuelist.repository.room.RoomRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import timber.log.Timber
 import java.util.concurrent.Executors
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
+import kotlin.random.Random
+
 
 @RunWith(AndroidJUnit4::class)
-class GitHubIssueDbTest: InstrumentedTest() {
+class GitHubIssueDbTest : InstrumentedTest() {
     @Inject
     lateinit var mRoomRepository: RoomRepository
 
@@ -34,7 +34,6 @@ class GitHubIssueDbTest: InstrumentedTest() {
 
     @Test
     fun test_save_repository() {
-        Timber.d("test_save_repository - 1")
         val repositoryEntityModel = RepositoryEntityModel(
             id = 1,
             description = "Repository description",
@@ -45,17 +44,56 @@ class GitHubIssueDbTest: InstrumentedTest() {
             starCount = 124,
             subscriberCount = 5657
         )
-        Timber.d("test_save_repository - 2")
-        CoroutineScope(AsyncTask.THREAD_POOL_EXECUTOR.asCoroutineDispatcher()).launch {
+        runBlocking {
             mRoomRepository.saveRepository(repositoryEntityModel)
         }
 
-        Thread.sleep(10000)
-        Timber.d("test_save_repository - 3")
-        val savedRepository = mRoomRepository.getRepository().blockingObserve()
-        Timber.d("test_save_repository - 4")
-        assertNotNull("There must be a repository saved", savedRepository?.data)
-        Timber.d("test_save_repository - 5")
+        val savedRepositoryEntityModel = runBlocking {
+            mRoomRepository.getRepositoryAsync()
+        }
+
+        assertNotNull("There must be a repository saved", savedRepositoryEntityModel)
+        assertTrue(
+            "The repository must be equal",
+            repositoryEntityModel == savedRepositoryEntityModel
+        )
+
+        val repositoryIssueEntityList = List(Random.nextInt(10)) {
+            createNewRepositoryIssueEntity(it, savedRepositoryEntityModel!!.id)
+        }
+
+        runBlocking {
+            mRoomRepository.saveIssueList(repositoryIssueEntityList)
+        }
+
+        val savedRepositoryIssueList = runBlocking {
+            mRoomRepository.getAllIssueAsync()
+        }
+
+        assertEquals(
+            "The issue list size must be the same",
+            repositoryIssueEntityList.size,
+            savedRepositoryIssueList.size
+        )
+
+        repositoryIssueEntityList.sortedByDescending { it.createdAt }
+            .forEachIndexed { index, repositoryIssueEntityModel ->
+                assertEquals(
+                    "The issue: $repositoryIssueEntityModel must be equal",
+                    repositoryIssueEntityModel,
+                    savedRepositoryIssueList[index]
+                )
+            }
+
+        runBlocking {
+            mRoomRepository.removeAllIssues()
+        }
+
+        val emptyRepositoryIssueList = runBlocking {
+            mRoomRepository.getAllIssueAsync()
+        }
+
+        assertTrue("After remove all issues, the fetch method must return an empty list", emptyRepositoryIssueList.isEmpty())
     }
 
     @After

@@ -33,7 +33,7 @@ data class RepositoryIssueEntityModel(
     val number: Int,
 
     @ColumnInfo(name = "created_at")
-    val createdAt: Date,
+    val createdAt: Date?,
 
     @ColumnInfo(name = "userName")
     val userName: String,

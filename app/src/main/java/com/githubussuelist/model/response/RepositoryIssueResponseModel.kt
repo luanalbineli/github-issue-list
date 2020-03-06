@@ -18,7 +18,7 @@ data class RepositoryIssueResponseModel(
     val number: Int,
 
     @SerializedName("created_at")
-    val createdAt: Date,
+    val createdAt: Date?,
 
     @SerializedName("user")
     val user: IssueUserModel,

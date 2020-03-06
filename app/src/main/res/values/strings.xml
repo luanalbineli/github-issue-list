@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <!-- BEGIN: Repository detail -->
+    <string name="text_dialog_repository_detail_save">Salvar</string>
     <string name="text_dialog_repository_detail_format">Formato: organização/repositório</string>
     <string name="text_dialog_repository_detail_title">Detalhes do repositório</string>
     <string name="text_dialog_repository_detail_name">Nome do repositório</string>
@@ -12,19 +13,20 @@
     <!-- END: Repository detail -->
 
     <!-- BEGIN: Issue list -->
+    <string name="text_issue_list_empty">Nenhuma issue encontrada</string>
     <string name="text_issue_list_last_sync_at">Última sincronização em:</string>
-
+    <string name="error_issue_list_fetch">Não foi possível buscar a lista de issues. Por favor, tente novamente.</string>
     <!-- END: Issue list -->
+
+    <!-- BEGIN: Request status -->
+    <string name="text_request_status_try_again">Tentar novamente</string>
+    <string name="text_request_status_empty_list_title">Lista vazia</string>
+    <!-- END: Request status -->
 
     <!-- BEGIN: Common -->
     <string name="symbol_hashtag">#</string>
-    <string name="text_save">Salvar</string>
-    <string name="text_try_again">Tentar novamente</string>
-    <string name="text_request_status_empty_list_title">Empty title</string>
     <string name="text_opened_on">aberto há</string>
     <string name="text_by">por</string>
     <string name="format_date_dd_MM_yyyy_HH_mm">dd/MM/yyyy \'às\' HH:mm</string>
-    <string name="error_issue_list_fetch">Não foi possível buscar a lista de issues. Por favor, tente novamente.</string>
-    <string name="text_issue_list_empty">Nenhuma issue encontrada</string>
     <!-- END: Common-->
 </resources>

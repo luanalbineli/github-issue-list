@@ -22,7 +22,7 @@ data class RepositoryEntityModel(
     val fullName: String,
 
     @ColumnInfo(name = "description")
-    val description: String,
+    val description: String?,
 
     @ColumnInfo(name = "open_issue_count")
     val openIssueCount: Int,

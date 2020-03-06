@@ -2,7 +2,6 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -17,16 +16,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 
-    <style name="RoundBottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+    Theme.Design.Light.BottomSheetDialog
+    <style name="AppTheme.RoundBottomSheetDialog" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/RoundBottomSheet</item>
-        <item name="android:windowCloseOnTouchOutside">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:colorBackground">#fff</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:backgroundDimEnabled">true</item>
-        <item name="android:backgroundDimAmount">0.8</item>
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowIsFloating">true</item>
     </style>
 
     <style name="RoundBottomSheet" parent="Widget.Design.BottomSheet.Modal">

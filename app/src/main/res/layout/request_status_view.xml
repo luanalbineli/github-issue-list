@@ -4,11 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
+    <com.githubussuelist.widgets.progressBar.WrappedProgressBar
         android:layout_gravity="center"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:id="@+id/loading_request_status" />
+        android:id="@+id/progress_bar_request_status" />
 
     <LinearLayout
         android:id="@+id/view_request_status_error"
@@ -21,7 +21,6 @@
             android:id="@+id/text_request_status_error"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
             android:fontFamily="sans-serif-medium"
             android:textAlignment="center"
             tools:text="Ocorreu um erro ao carregar as informações. Por favor, tente novamente" />
@@ -33,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/default_margin"
             android:layout_marginBottom="6dp"
-            android:text="@string/text_try_again"
+            android:text="@string/text_request_status_try_again"
             android:textAllCaps="true" />
     </LinearLayout>
 
@@ -48,16 +47,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:fontFamily="sans-serif-thin"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
             android:text="@string/text_request_status_empty_list_title"
-            android:textAllCaps="true"
-            android:textStyle="bold" />
+            android:textAllCaps="true" />
 
         <TextView
             android:id="@+id/text_request_status_empty"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-thin"
+            style="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:textAlignment="center"
             tools:text="Nenhum estabelecimento encontrado" />
     </LinearLayout>

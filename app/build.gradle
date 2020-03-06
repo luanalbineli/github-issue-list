@@ -96,10 +96,8 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_version"
     testRuntimeOnly "org.junit.vintage:junit-vintage-engine:$junit_version"
     testImplementation "io.mockk:mockk:$mockk_version"
-
-    // Faker
     testImplementation "com.github.javafaker:javafaker:$java_faker_version"
-    // androidTestImplementation "com.github.javafaker:javafaker:$java_faker_version"
+
 
     // UI Tests dependencies
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
@@ -111,6 +109,6 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$espresso_version"
     androidTestImplementation "androidx.test:rules:$test_rules_version"
     androidTestImplementation "androidx.test:runner:$test_rules_version"
-    androidTestImplementation "androidx.arch.core:core-testing:$arch_testing_implementation"
     androidTestUtil "androidx.test:orchestrator:$test_orchestrator_version"
+    androidTestImplementation "com.github.javafaker:javafaker:$java_faker_version"
 }

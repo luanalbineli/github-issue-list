@@ -17,7 +17,7 @@ data class RepositoryResponseModel constructor(
     val fullName: String,
 
     @SerializedName("description")
-    val description: String,
+    val description: String?,
 
     @SerializedName("fork_count")
     val forkCount: Int,

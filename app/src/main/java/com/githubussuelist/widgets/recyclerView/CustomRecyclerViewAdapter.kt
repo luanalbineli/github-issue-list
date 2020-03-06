@@ -8,7 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.githubussuelist.R
 import timber.log.Timber
 
-abstract class CustomRecyclerViewAdapter<TModel, THolder: CustomVH> constructor(diffCallback: DiffUtil.ItemCallback<TModel>): ListAdapter<TModel, CustomVH>(diffCallback) {
+abstract class CustomRecyclerViewAdapter<TModel, THolder: CustomVH>
+constructor(
+    private val recyclerView: RecyclerView,
+    diffCallback: DiffUtil.ItemCallback<TModel>
+): ListAdapter<TModel, CustomVH>(diffCallback) {
     var onItemClick: ((adapterPosition: Int, model: TModel) -> Unit)? = null
     var onTryAgain: (() -> Unit)? = null
     var errorMessageResId: Int? = null
@@ -77,14 +81,16 @@ abstract class CustomRecyclerViewAdapter<TModel, THolder: CustomVH> constructor(
 
         val previousRequestStatus = mRequestStatus
         mRequestStatus = status
-        if (mRequestStatus == null) {
-            notifyItemRemoved(itemSize)
-        } else if (previousRequestStatus == null) {
-            notifyItemInserted(itemSize)
-        } else {
-            @Suppress("DEPRECATION")
-            Timber.d("Changing the request status. Size list: $itemSize. Total: $itemCount")
-            notifyItemChanged(itemSize)
+        when {
+            mRequestStatus == null -> {
+                notifyItemRemoved(itemSize)
+            }
+            previousRequestStatus == null -> {
+                notifyItemInserted(itemSize)
+            }
+            else -> {
+                notifyItemChanged(itemSize)
+            }
         }
     }
 

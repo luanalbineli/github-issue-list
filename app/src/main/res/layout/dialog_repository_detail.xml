@@ -35,28 +35,30 @@
         </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/text_layout_repository_detail_name"
+            android:id="@+id/edit_text_layout_repository_detail_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/default_margin"
+            app:boxStrokeColor="@color/colorPrimary"
             android:hint="@string/text_dialog_repository_detail_name"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_repository"
             app:helperText="@string/text_dialog_repository_detail_format"
-            app:helperTextEnabled="true"
-            app:placeholderText="@string/text_dialog_repository_detail_name">
+            app:helperTextEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:id="@+id/edit_text_repository_detail_name"
                 android:enabled="@{repositoryViewModel.repositoryDetail.status != Status.LOADING}"
                 android:text="@={repositoryViewModel.repositoryName}" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <ProgressBar
+        <com.githubussuelist.widgets.progressBar.WrappedProgressBar
             android:layout_marginBottom="@dimen/default_margin_2x"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:id="@+id/progress_bar_repository_detail"
             app:goneUnless="@{repositoryViewModel.repositoryDetail.status == Status.LOADING}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -71,7 +73,7 @@
             android:layout_marginBottom="@dimen/default_margin_2x"
             android:enabled="@{repositoryViewModel.repositoryName.length() > 0}"
             android:onClick="@{() -> repositoryViewModel.saveRepositoryDetail()}"
-            android:text="@string/text_save"
+            android:text="@string/text_dialog_repository_detail_save"
             app:goneUnless="@{repositoryViewModel.repositoryDetail.status != Status.LOADING}"
             app:layout_constraintBottom_toBottomOf="parent" />
 

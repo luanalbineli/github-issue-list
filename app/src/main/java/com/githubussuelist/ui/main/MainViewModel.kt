@@ -13,14 +13,13 @@ import com.githubussuelist.repository.room.RoomRepository
 import com.githubussuelist.repository.sharedPreferences.SharedPreferencesRepository
 import com.githubussuelist.ui.repository.RepositoryDetailResult
 import com.githubussuelist.util.Constants
-import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val gitHubRepository: GitHubRepository,
     private val sharedPreferencesRepository: SharedPreferencesRepository,
-    roomRepository: RoomRepository
+    private val roomRepository: RoomRepository
 ) : ViewModel() {
     private val mRepositoryEntityModel = MediatorLiveData<Result<RepositoryEntityModel>>()
     val repositoryEntityModel: LiveData<Result<RepositoryEntityModel>>
@@ -34,8 +33,7 @@ class MainViewModel @Inject constructor(
     val networkIssueList: LiveData<Result<List<RepositoryIssueEntityModel>>>
         get() = mNetworkIssueList
 
-    private val mIssueSyncDetail =
-        MutableLiveData<IssueSyncDetailModel>(sharedPreferencesRepository.getIssueSyncDetailModel())
+    private val mIssueSyncDetail = MutableLiveData<IssueSyncDetailModel>(sharedPreferencesRepository.getIssueSyncDetailModel())
     val issueSyncDetail: LiveData<IssueSyncDetailModel>
         get() = mIssueSyncDetail
 
@@ -55,32 +53,12 @@ class MainViewModel @Inject constructor(
                 if (it.data == null) {
                     mOpenRepositoryDialog.value = null
                 } else {
-                    checkFetchIssueList()
-                }
-            }
-        }
-
-        mIssueList.addSource(roomRepository.getRepositoryIssueList().toLiveData(pageSize = Constants.API_ISSUE_PAGE_SIZE)) {
-            Timber.d("ISSUE_LIST: $it")
-            mIssueList.value = it
-
-            checkFetchIssueList()
-        }
-    }
-
-    private fun checkFetchIssueList() {
-        val issueList = issueList.value
-        val repositoryEntityModel = repositoryEntityModel.value?.data
-        Timber.d("checkFetchIssueList - Issue list: $issueList - Repo: $repositoryEntityModel")
-        if (issueList != null && issueList.size == 0 && repositoryEntityModel != null) {
-            val issueSyncDetailModel = sharedPreferencesRepository.getIssueSyncDetailModel()
-            issueSyncDetailModel?.let {
-                if (issueSyncDetailModel.hasMoreIssues) {
-                    fetchRepositoryIssues(repositoryEntityModel)
+                    fetchRepositoryIssues(it.data, isFirstAttempt = true)
                 }
             }
         }
     }
+
 
     fun openRepositoryDialog() {
         mOpenRepositoryDialog.value = repositoryEntityModel.value?.data
@@ -88,11 +66,12 @@ class MainViewModel @Inject constructor(
 
     fun handleRepositoryDetailResult(repositoryDetailResult: RepositoryDetailResult) {
         if (repositoryDetailResult is RepositoryDetailResult.Updated) {
+            val isFirstAttempt = mRepositoryEntityModel.value == null
             mRepositoryEntityModel.value =
                 Result.success(repositoryDetailResult.repositoryEntityModel)
 
             val hasMoreIssues = if (repositoryDetailResult.repositoryEntityModel.openIssueCount > 0) {
-                fetchRepositoryIssues(repositoryDetailResult.repositoryEntityModel)
+                fetchRepositoryIssues(repositoryDetailResult.repositoryEntityModel, isFirstAttempt = isFirstAttempt)
                 true
             } else {
                 false
@@ -113,6 +92,7 @@ class MainViewModel @Inject constructor(
 
     private fun fetchRepositoryIssues(
         repositoryEntityModel: RepositoryEntityModel,
+        isFirstAttempt: Boolean,
         pageIndex: Int = Constants.API_INITIAL_PAGE_INDEX
     ) {
         mNetworkIssueList.addSource(
@@ -121,18 +101,32 @@ class MainViewModel @Inject constructor(
                 repositoryEntityModel.id,
                 repositoryEntityModel.orgName,
                 repositoryEntityModel.name,
-                pageIndex
+                pageIndex,
+                clearPreviousList = isFirstAttempt
             )
         ) {
             mNetworkIssueList.value = it
-            if (it.data != null) {
-                val issueSyncDetailModel = IssueSyncDetailModel(
-                    lastPageIndex = pageIndex,
-                    lastSyncDate = Date(),
-                    hasMoreIssues = it.data.size == Constants.API_ISSUE_PAGE_SIZE
-                )
-                updateIssueSyncDetail(issueSyncDetailModel)
+
+            if (it.status != Status.LOADING) {
+                if (isFirstAttempt) {
+                    linkIssueListToDataSource()
+                }
+
+                if (it.data != null) {
+                    val issueSyncDetailModel = IssueSyncDetailModel(
+                        lastPageIndex = pageIndex,
+                        lastSyncDate = Date(),
+                        hasMoreIssues = it.data.size == Constants.API_ISSUE_PAGE_SIZE
+                    )
+                    updateIssueSyncDetail(issueSyncDetailModel)
+                }
             }
+        }
+    }
+
+    private fun linkIssueListToDataSource() {
+        mIssueList.addSource(roomRepository.getIssueDataSourceFactory().toLiveData(pageSize = Constants.API_ISSUE_PAGE_SIZE)) {
+            mIssueList.value = it
         }
     }
 
@@ -144,7 +138,7 @@ class MainViewModel @Inject constructor(
     fun fetchMoreIssues() {
         mIssueSyncDetail.value?.let { issueSyncDetailModel ->
             mRepositoryEntityModel.value?.data?.let { repositoryEntityModel ->
-                fetchRepositoryIssues(repositoryEntityModel, issueSyncDetailModel.lastPageIndex + 1)
+                fetchRepositoryIssues(repositoryEntityModel, isFirstAttempt = false, pageIndex = issueSyncDetailModel.lastPageIndex + 1)
             }
 
         }
